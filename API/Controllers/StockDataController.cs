@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
 using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 
 namespace API.Controllers
 {
@@ -19,12 +20,11 @@ namespace API.Controllers
 
         [HttpGet("get-demo-data")]
         public async Task<IActionResult> GetDemoData() {
-            
-            
             HttpClient client = new HttpClient();
 
             string data = await client.GetStringAsync(ModifyQuery());
-            return Ok(data);
+
+            return Ok(JsonObject.Parse(data));
         }
 
         [HttpGet("get-data/{sym}")]
@@ -33,7 +33,8 @@ namespace API.Controllers
             HttpClient client = new HttpClient();
 
             string data = await client.GetStringAsync(ModifyQuery(cmp_sym:sym));
-            return Ok(data);
+
+            return Ok(JsonObject.Parse(data));
         }
 
         [HttpGet("get-data/{sym}/{interval}")]
@@ -42,15 +43,15 @@ namespace API.Controllers
             HttpClient client = new HttpClient();
 
             string data = await client.GetStringAsync(ModifyQuery(cmp_sym: sym,interval:interval));
-            return Ok(data);
+
+            return Ok(JsonObject.Parse(data));
         }
 
         // Helper method for modifying the query
         private Uri ModifyQuery(string function= "TIME_SERIES_INTRADAY",string cmp_sym="IBM",string interval="5min") {
 
-            // Possible functions: TIME_SERIES_INTRADAY, TIME_SERIES_DAILY, TIME_SERIES_DAILY_ADJUSTED
-            // Possible intervals: 1min, 5min, 15min, 30min
             string query = $"https://www.alphavantage.co/query?function={function}&symbol={cmp_sym}&interval={interval}&apikey={API_KEY}";
+
             return new Uri(query);
         }
     }
