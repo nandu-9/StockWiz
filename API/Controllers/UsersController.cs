@@ -20,14 +20,22 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         { 
             var users = await _context.Users.ToListAsync();
-            return users;
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AppUser>> GetUser(int id )
         {
             var user = await _context.Users.FindAsync(id);
-            return user;
+            return Ok(user);
+        }
+
+        [HttpPost("add-user")]
+        public async Task<IActionResult> AddUser([FromBody]AppUser appUser)
+        { 
+             await _context.AddAsync(appUser);
+            _context.SaveChanges();
+            return Ok(appUser);
         }
     }
 }

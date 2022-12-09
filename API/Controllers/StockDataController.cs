@@ -11,11 +11,11 @@ namespace API.Controllers
     [ApiController]
     public class StockDataController : ControllerBase
     {
-        // Need to change this implimentation by using configuration procedure
-        private string API_KEY = "Q7VUS7OFT17PHC85";
-        public StockDataController()
+        private readonly IConfiguration _configuration;
+
+        public StockDataController(IConfiguration configuration)
         {
-            
+            _configuration = configuration;
         }
 
         [HttpGet("get-demo-data")]
@@ -50,6 +50,7 @@ namespace API.Controllers
         // Helper method for modifying the query
         private Uri ModifyQuery(string function= "TIME_SERIES_INTRADAY",string cmp_sym="IBM",string interval="5min") {
 
+            string API_KEY = _configuration.GetConnectionString("StockAPIKey");
             string query = $"https://www.alphavantage.co/query?function={function}&symbol={cmp_sym}&interval={interval}&apikey={API_KEY}";
 
             return new Uri(query);
